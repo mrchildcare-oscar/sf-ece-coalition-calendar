@@ -595,8 +595,8 @@
                             </div>
                             <div className="header-actions">
                                 <div className="view-toggle" role="radiogroup" aria-label="Calendar view">
-                                    <button className={`view-toggle-btn ${viewMode === 'fiscal' ? 'active' : ''}`} onClick={() => setViewMode('fiscal')} role="radio" aria-checked={viewMode === 'fiscal'}>Fiscal Year</button>
                                     <button className={`view-toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`} onClick={() => setViewMode('calendar')} role="radio" aria-checked={viewMode === 'calendar'}>Calendar Year</button>
+                                    <button className={`view-toggle-btn ${viewMode === 'fiscal' ? 'active' : ''}`} onClick={() => setViewMode('fiscal')} role="radio" aria-checked={viewMode === 'fiscal'}>Fiscal Year</button>
                                 </div>
                                 <button className="today-btn" onClick={goToToday}>Today &#8635;</button>
                             </div>
@@ -817,7 +817,7 @@
             const [selectedMonth, setSelectedMonth] = useState(CURRENT_MONTH);
             const [activeTracks, setActiveTracks] = useState(() => new Set(['ece-advocacy', 'sf-budget']));
             const [showBallotHistory, setShowBallotHistory] = useState(false);
-            const [viewMode, setViewMode] = useState('fiscal'); // 'fiscal' or 'calendar'
+            const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'fiscal'
 
             const toggleTrack = useCallback((trackId) => {
                 setActiveTracks(prev => {
