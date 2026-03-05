@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SF ECE Advocacy Coalition — Annual Cycle Calendar</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #FAF7F2;
+            color: #2C2825;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            background: #FFFFFF;
+            border-bottom: 1px solid #E8E2DA;
+            padding: 24px 30px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2C2825;
+        }
+        .header .subtitle {
+            font-size: 13px;
+            color: #6B6560;
+            margin-top: 2px;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .today-btn {
+            background: #2C2825;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .today-btn:hover { background: #4a4540; }
+        .view-toggle {
+            display: flex;
+            background: #F0EBE3;
+            border-radius: 8px;
+            padding: 2px;
+            gap: 2px;
+        }
+        .view-toggle-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: #6B6560;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .view-toggle-btn.active {
+            background: #FFFFFF;
+            color: #2C2825;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .legend-item.active { border-color: currentColor; }
+        .legend-item.inactive { opacity: 0.35; }
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Month Strip */
+        .month-strip {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 4px;
+            min-width: 700px;
+        }
+        .month-col {
+            text-align: center;
+            cursor: pointer;
+            padding: 8px 4px 12px;
+            border-radius: 8px;
+            transition: background 0.15s;
+            position: relative;
+        }
+        .month-col:hover { background: #F5F0EA; }
+        .month-col.selected { background: #F0EBE3; }
+        .month-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6B6560;
+            margin-bottom: 8px;
+        }
+        .month-col.selected .month-label,
+        .month-col.current .month-label { color: #2C2825; }
+        .now-indicator {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #C74B50;
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 0 0 6px 6px;
+            letter-spacing: 0.5px;
+        }
+        .track-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-height: 50px;
+        }
+        .track-bar {
+            height: 8px;
+            border-radius: 4px;
+            transition: opacity 0.2s, transform 0.15s;
+            position: relative;
+        }
+        .track-bar:hover {
+            transform: scaleY(1.4);
+        }
+        .track-bar-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2C2825;
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .track-bar:hover .track-bar-tooltip { display: block; }
+
+        /* Upcoming Section */
+        .upcoming-section {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .upcoming-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+        .upcoming-card {
+            flex-shrink: 0;
+            background: #FAF7F2;
+            border-radius: 10px;
+            padding: 12px 16px;
+            min-width: 220px;
+            max-width: 280px;
+            border-left: 4px solid;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .upcoming-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .upcoming-date {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+        .upcoming-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2C2825;
+        }
+        .upcoming-track {
+            font-size: 11px;
+            color: #6B6560;
+            margin-top: 4px;
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .detail-month-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-arrow {
+            background: #FAF7F2;
+            border: 1px solid #E8E2DA;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            color: #6B6560;
+            transition: all 0.15s;
+        }
+        .nav-arrow:hover { background: #F0EBE3; color: #2C2825; }
+        .track-group {
+            margin-bottom: 20px;
+        }
+        .track-group:last-child { margin-bottom: 0; }
+        .track-group-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #E8E2DA;
+        }
+        .track-group-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .track-group-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .event-card {
+            padding: 10px 0 10px 20px;
+            border-left: 2px solid #E8E2DA;
+            margin-left: 5px;
+            position: relative;
+        }
+        .event-card::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 14px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #E8E2DA;
+        }
+        .event-date {
+            font-size: 12px;
+            font-weight: 700;
+            color: #6B6560;
+            margin-bottom: 2px;
+        }
+        .event-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2C2825;
+        }
+        .event-desc {
+            font-size: 12px;
+            color: #6B6560;
+            margin-top: 2px;
+        }
+        .event-link {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .event-link:hover { text-decoration: underline; }
+        .no-events {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6B6560;
+            font-size: 14px;
+        }
+
+        /* Ballot History */
+        .ballot-section {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .ballot-header {
+            padding: 20px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.15s;
+            user-select: none;
+        }
+        .ballot-header:hover { background: #FAF7F2; }
+        .ballot-toggle {
+            font-size: 13px;
+            color: #6B6560;
+            font-weight: 600;
+        }
+        .ballot-body {
+            padding: 0 24px 24px;
+        }
+        .ballot-card {
+            background: #FAF7F2;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+        .ballot-card:last-child { margin-bottom: 0; }
+        .ballot-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .ballot-card-year {
+            font-size: 12px;
+            font-weight: 700;
+            color: #6B6560;
+        }
+        .ballot-card-desc {
+            font-size: 13px;
+            color: #6B6560;
+            margin-top: 6px;
+        }
+        .ballot-result {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 6px;
+        }
+        .ballot-result.passed { background: #d4edda; color: #155724; }
+        .ballot-result.failed { background: #f8d7da; color: #721c24; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #6B6560;
+        }
+        .footer a { color: #6B6560; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .month-grid {
+                grid-template-columns: repeat(6, 1fr);
+                min-width: 0;
+            }
+        }
+        @media (max-width: 600px) {
+            .month-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .header { padding: 16px 16px 12px; }
+            .header h1 { font-size: 18px; }
+            .container { padding: 12px; }
+            .legend { gap: 4px; }
+            .legend-item { padding: 4px 8px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // ── Track definitions ──
+        const TRACKS = [
+            { id: 'ece-advocacy', name: 'ECE Advocacy Days', color: '#2D6A4F' },
+            { id: 'sf-budget', name: 'SF City Budget', color: '#4285f4' },
+            { id: 'ca-budget', name: 'State Budget Process', color: '#D4A843' },
+            { id: 'elections', name: 'Elections', color: '#C74B50' },
+            { id: 'ca-legislative', name: 'State Legislative Calendar', color: '#7B5EA7' }
+        ];
+
+        const MONTHS = [
+            'January','February','March','April','May','June',
+            'July','August','September','October','November','December'
+        ];
+        const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        // Fiscal year order: Jul–Jun
+        const FY_ORDER = [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
+
+        // ── Events data (month is 1-indexed) ──
+        const EVENTS = [
+            // SF City Budget (10 — corrected per PBC CY&F Budget Training Feb 2026)
+            { track: 'sf-budget', month: 12, day: 1, name: 'Mayor issues budget instructions', desc: 'Mayor sends budget instructions and priorities to city departments (FY26-27: $400M in ongoing savings, outcomes-focused)' },
+            { track: 'sf-budget', month: 1, day: 10, name: 'Six-month budget status report', desc: 'Controller publishes mid-year budget status report' },
+            { track: 'sf-budget', month: 2, day: 1, name: 'Department budget submissions begin', desc: 'Departments prepare and submit budget proposals to the Mayor' },
+            { track: 'sf-budget', month: 2, day: 21, name: 'Department budget proposals due', desc: 'Departments finalize and submit proposed budgets to the Mayor (end of Department Phase)' },
+            { track: 'sf-budget', month: 3, day: 1, name: 'Supervisor budget framework', desc: 'Board of Supervisors sets budget framework and priorities for the coming fiscal year' },
+            { track: 'sf-budget', month: 3, day: 31, name: 'March Joint Report (Five-Year Plan)', desc: 'Controller and Mayor release the Five-Year Financial Plan update' },
+            { track: 'sf-budget', month: 4, day: 15, name: 'Budget Analyst reports due', desc: 'Board of Supervisors Budget & Legislative Analyst reviews begin' },
+            { track: 'sf-budget', month: 6, day: 1, name: 'Mayor\u2019s proposed budget submitted', desc: 'Mayor submits the proposed two-year budget to the Board of Supervisors (due by June 1)' },
+            { track: 'sf-budget', month: 6, day: 15, name: 'Board budget hearings & revisions', desc: 'Board of Supervisors Budget Committee holds public hearings and revises the proposed budget' },
+            { track: 'sf-budget', month: 7, day: 1, name: 'New fiscal year begins', desc: 'City fiscal year starts July 1; Board adopts final budget by late July' },
+
+            // CA State Budget (9)
+            { track: 'ca-budget', month: 1, day: 10, name: 'Governor\u2019s budget proposal', desc: 'Governor releases proposed state budget for the coming fiscal year' },
+            { track: 'ca-budget', month: 2, day: 1, name: 'Legislative Analyst review', desc: 'LAO publishes analysis of the Governor\u2019s proposed budget' },
+            { track: 'ca-budget', month: 2, day: 15, name: 'Senate/Assembly budget subcommittee hearings', desc: 'Budget subcommittees begin hearing department budget proposals' },
+            { track: 'ca-budget', month: 3, day: 1, name: 'Spring budget hearings continue', desc: 'Subcommittee hearings on education, health, human services budgets' },
+            { track: 'ca-budget', month: 5, day: 14, name: 'May Revise released', desc: 'Governor releases updated budget proposal with revised revenue projections' },
+            { track: 'ca-budget', month: 6, day: 1, name: 'Budget conference committee', desc: 'Legislature reconciles Senate and Assembly budget versions' },
+            { track: 'ca-budget', month: 6, day: 15, name: 'Constitutional budget deadline', desc: 'Legislature must pass the budget bill by June 15 or lose per diem pay' },
+            { track: 'ca-budget', month: 6, day: 30, name: 'Governor signs budget', desc: 'Governor signs the Budget Act before the new fiscal year' },
+            { track: 'ca-budget', month: 7, day: 1, name: 'State fiscal year begins', desc: 'California fiscal year starts July 1' },
+
+            // Elections (10)
+            { track: 'elections', month: 1, day: 1, name: 'Candidate filing period opens (Jun primary)', desc: 'Filing opens for June primary/special election candidates' },
+            { track: 'elections', month: 2, day: 7, name: 'Last day to register for March special election', desc: 'Voter registration deadline for any March special elections' },
+            { track: 'elections', month: 3, day: 8, name: 'March special election (if scheduled)', desc: 'Special election date if called by the Board of Supervisors' },
+            { track: 'elections', month: 5, day: 18, name: 'Last day to register for June primary', desc: 'Voter registration deadline for the June primary election' },
+            { track: 'elections', month: 6, day: 3, name: 'June primary election', desc: 'California statewide primary election day' },
+            { track: 'elections', month: 7, day: 15, name: 'Ballot measure submission deadline (Nov)', desc: 'Deadline to submit ballot measures for November general election' },
+            { track: 'elections', month: 8, day: 9, name: 'Arguments for/against ballot measures due', desc: 'Deadline for filing arguments for and against November ballot measures' },
+            { track: 'elections', month: 10, day: 20, name: 'Last day to register for November election', desc: 'Voter registration deadline for the November general election' },
+            { track: 'elections', month: 10, day: 7, name: 'Vote-by-mail ballots mailed', desc: 'County elections offices mail ballots to registered voters' },
+            { track: 'elections', month: 11, day: 4, name: 'November general election', desc: 'General election day for federal, state, and local races' },
+
+            // ECE Advocacy Days (11)
+            { track: 'ece-advocacy', month: 2, day: 12, name: 'Child Care Advocacy Day (Sacramento)', desc: 'Annual advocacy day \u2014 ECE providers and parents visit legislators in Sacramento' },
+            { track: 'ece-advocacy', month: 4, day: 12, name: 'Week of the Young Child (WOYC)', desc: 'NAEYC\u2019s annual celebration highlighting ECE programs and needs', url: 'https://www.naeyc.org/events/woyc' },
+            { track: 'ece-advocacy', month: 5, day: 1, name: 'May Day / International Workers\u2019 Day', desc: 'International Workers\u2019 Day \u2014 ECE coalition march and labor solidarity actions' },
+            { track: 'ece-advocacy', month: 5, day: 1, name: 'Worthy Wage Day', desc: 'National campaign for fair compensation for ECE workers' },
+            { track: 'ece-advocacy', month: 5, day: 12, name: 'Day Without Child Care', desc: 'National awareness day \u2014 what happens when child care isn\u2019t available; visit elected officials\u2019 offices' },
+            { track: 'ece-advocacy', month: 5, day: 8, name: 'Provider Appreciation Day', desc: 'National day to recognize and thank child care providers' },
+            { track: 'ece-advocacy', month: 6, day: 15, name: 'CAPPA Conference', desc: 'California Alternative Payment Program Association annual conference' },
+            { track: 'ece-advocacy', month: 9, day: 20, name: 'CACFP Week', desc: 'National Child and Adult Care Food Program awareness week' },
+            { track: 'ece-advocacy', month: 10, day: 15, name: 'CAEYC Conference', desc: 'California Association for the Education of Young Children annual conference' },
+            { track: 'ece-advocacy', month: 11, day: 1, name: 'NAEYC Annual Conference', desc: 'National Association for the Education of Young Children annual conference', url: 'https://www.naeyc.org/events/annual' },
+            { track: 'ece-advocacy', month: 11, day: 15, name: 'Worthy Wage Campaign wrap-up', desc: 'End-of-year reporting on wage equity progress and next-year planning' },
+
+            // CA Legislative (12)
+            { track: 'ca-legislative', month: 1, day: 6, name: 'Legislature reconvenes', desc: 'California Legislature reconvenes for new session' },
+            { track: 'ca-legislative', month: 1, day: 10, name: 'Bill introduction deadline (year 1)', desc: 'Last day for legislators to submit bill requests to Legislative Counsel' },
+            { track: 'ca-legislative', month: 2, day: 21, name: 'Last day to introduce bills', desc: 'Final day for new bills to be introduced in either house' },
+            { track: 'ca-legislative', month: 3, day: 26, name: 'Spring recess begins', desc: 'Legislature adjourns for spring recess through early April' },
+            { track: 'ca-legislative', month: 4, day: 7, name: 'Legislature reconvenes from spring recess', desc: 'Session resumes after spring break' },
+            { track: 'ca-legislative', month: 4, day: 25, name: 'Policy committee deadline (house of origin)', desc: 'Last day for policy committees to hear fiscal bills in house of origin' },
+            { track: 'ca-legislative', month: 5, day: 16, name: 'Fiscal committee deadline', desc: 'Last day for fiscal committees to hear and report bills to the floor' },
+            { track: 'ca-legislative', month: 5, day: 30, name: 'House of origin deadline', desc: 'Last day for each house to pass bills introduced in that house' },
+            { track: 'ca-legislative', month: 7, day: 4, name: 'Summer recess begins', desc: 'Legislature adjourns for summer recess' },
+            { track: 'ca-legislative', month: 8, day: 4, name: 'Legislature reconvenes from summer recess', desc: 'Session resumes for final push on bills' },
+            { track: 'ca-legislative', month: 9, day: 12, name: 'Session ends (interim recess)', desc: 'Last day for Legislature to pass bills; adjourns for interim recess' },
+            { track: 'ca-legislative', month: 10, day: 12, name: 'Governor\u2019s bill signing deadline', desc: 'Last day for Governor to sign or veto bills passed by Legislature' }
+        ];
+
+        // ── Ballot measure history ──
+        const BALLOT_HISTORY = [
+            { name: 'Proposition C (2018)', year: 2018, passed: true, vote: '61%', desc: 'Commercial Rent Tax for Early Care and Education \u2014 raised ~$146M/yr for child care and early education via gross receipts tax on large businesses.' },
+            { name: 'Proposition C (2014)', year: 2014, passed: true, vote: '69%', desc: 'Children\u2019s Fund Reauthorization \u2014 extended the Children\u2019s Fund (originally Prop D, 2000) for 25 years to fund children\u2019s services.' },
+            { name: 'Proposition H (2004)', year: 2004, passed: true, vote: '62%', desc: 'Rainy Day / ECE Reserve \u2014 created a rainy day reserve and dedicated surplus funds to early childhood programs.' },
+            { name: 'Proposition D (2000)', year: 2000, passed: true, vote: '74%', desc: 'Children\u2019s Fund \u2014 established the SF Children\u2019s Fund to support child care, health, education, and youth development.' },
+            { name: 'Proposition J (1996)', year: 1996, passed: false, vote: '47%', desc: 'Child Care Set-Aside \u2014 proposed setting aside General Fund revenue for child care; did not pass.' }
+        ];
+    </script>
+
+    <script type="text/babel">
+        const { useState, useMemo, useCallback } = React;
+
+        const TODAY = new Date();
+        const CURRENT_MONTH = TODAY.getMonth() + 1; // 1-indexed
+        const CURRENT_DAY = TODAY.getDate();
+
+        function getTrack(id) {
+            return TRACKS.find(t => t.id === id);
+        }
+
+        function getEventsForMonth(month, activeTracks) {
+            return EVENTS
+                .filter(e => e.month === month && activeTracks.has(e.track))
+                .sort((a, b) => a.day - b.day);
+        }
+
+        function getUpcomingEvents(activeTracks, days = 30) {
+            const now = new Date(TODAY);
+            const end = new Date(TODAY);
+            end.setDate(end.getDate() + days);
+
+            return EVENTS
+                .filter(e => activeTracks.has(e.track))
+                .map(e => {
+                    const d = new Date(TODAY.getFullYear(), e.month - 1, e.day);
+                    return { ...e, date: d };
+                })
+                .filter(e => e.date >= now && e.date <= end)
+                .sort((a, b) => a.date - b.date);
+        }
+
+        function formatDate(month, day) {
+            return `${MONTHS_SHORT[month - 1]} ${day}`;
+        }
+
+        // ── Header ──
+        function Header({ activeTracks, toggleTrack, goToToday, viewMode, setViewMode }) {
+            return (
+                <div className="header">
+                    <div className="header-inner">
+                        <div className="header-top">
+                            <div>
+                                <h1>SF ECE Advocacy Coalition &mdash; Annual Cycle Calendar</h1>
+                                <div className="subtitle">Annual cycle: budget processes, elections, legislative deadlines &amp; advocacy opportunities</div>
+                            </div>
+                            <div className="header-actions">
+                                <div className="view-toggle" role="radiogroup" aria-label="Calendar view">
+                                    <button className={`view-toggle-btn ${viewMode === 'fiscal' ? 'active' : ''}`} onClick={() => setViewMode('fiscal')} role="radio" aria-checked={viewMode === 'fiscal'}>Fiscal Year</button>
+                                    <button className={`view-toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`} onClick={() => setViewMode('calendar')} role="radio" aria-checked={viewMode === 'calendar'}>Calendar Year</button>
+                                </div>
+                                <button className="today-btn" onClick={goToToday}>Today &#8635;</button>
+                            </div>
+                        </div>
+                        <div className="legend" role="group" aria-label="Track filters">
+                            {TRACKS.map(track => {
+                                const active = activeTracks.has(track.id);
+                                return (
+                                    <div
+                                        key={track.id}
+                                        className={`legend-item ${active ? 'active' : 'inactive'}`}
+                                        style={{ color: track.color }}
+                                        onClick={() => toggleTrack(track.id)}
+                                        role="checkbox"
+                                        aria-checked={active}
+                                        tabIndex={0}
+                                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTrack(track.id); } }}
+                                    >
+                                        <span className="legend-dot" style={{ background: track.color }} />
+                                        {track.name}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ── Month Strip ──
+        const CY_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+        function MonthStrip({ selectedMonth, setSelectedMonth, activeTracks, viewMode }) {
+            const monthOrder = viewMode === 'fiscal' ? FY_ORDER : CY_ORDER;
+            return (
+                <div className="month-strip" role="navigation" aria-label="Month selector">
+                    {viewMode === 'fiscal' && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '11px', fontWeight: 600, color: '#6B6560', textTransform: 'uppercase', letterSpacing: '0.5px', minWidth: '700px' }}>
+                            <span>Fiscal Year Start</span>
+                            <span>Fiscal Year End</span>
+                        </div>
+                    )}
+                    <div className="month-grid">
+                        {monthOrder.map(month => {
+                            const label = MONTHS_SHORT[month - 1];
+                            const isCurrent = month === CURRENT_MONTH;
+                            const isSelected = month === selectedMonth;
+                            const monthEvents = EVENTS.filter(e => e.month === month);
+                            const trackEventsMap = {};
+                            TRACKS.forEach(t => {
+                                const count = monthEvents.filter(e => e.track === t.id).length;
+                                if (count > 0) trackEventsMap[t.id] = count;
+                            });
+
+                            return (
+                                <div
+                                    key={month}
+                                    className={`month-col ${isSelected ? 'selected' : ''} ${isCurrent ? 'current' : ''}`}
+                                    onClick={() => setSelectedMonth(month)}
+                                    role="button"
+                                    aria-label={`${MONTHS[month - 1]} - ${monthEvents.length} events`}
+                                    tabIndex={0}
+                                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedMonth(month); } }}
+                                >
+                                    {isCurrent && <span className="now-indicator">NOW</span>}
+                                    <div className="month-label">{label}</div>
+                                    <div className="track-bars">
+                                        {TRACKS.map(track => {
+                                            if (!activeTracks.has(track.id)) return null;
+                                            const count = trackEventsMap[track.id];
+                                            if (!count) return null;
+                                            return (
+                                                <div
+                                                    key={track.id}
+                                                    className="track-bar"
+                                                    style={{ background: track.color }}
+                                                >
+                                                    <span className="track-bar-tooltip">
+                                                        {track.name}: {count} event{count > 1 ? 's' : ''}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        // ── Upcoming Section ──
+        function UpcomingSection({ activeTracks }) {
+            const upcoming = useMemo(() => getUpcomingEvents(activeTracks, 30), [activeTracks]);
+
+            if (upcoming.length === 0) {
+                return (
+                    <div className="upcoming-section">
+                        <div className="section-title">&#9200; Coming Up (next 30 days)</div>
+                        <div style={{ color: '#6B6560', fontSize: '13px' }}>No upcoming events in the next 30 days for selected tracks.</div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="upcoming-section">
+                    <div className="section-title">&#9200; Coming Up (next 30 days)</div>
+                    <div className="upcoming-scroll">
+                        {upcoming.map((event, i) => {
+                            const track = getTrack(event.track);
+                            return (
+                                <div key={i} className="upcoming-card" style={{ borderLeftColor: track.color }}>
+                                    <div className="upcoming-date" style={{ color: track.color }}>{formatDate(event.month, event.day)}</div>
+                                    <div className="upcoming-name">{event.name}</div>
+                                    <div className="upcoming-track">{track.name}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        // ── Event Card ──
+        function EventCard({ event }) {
+            const track = getTrack(event.track);
+            return (
+                <div className="event-card">
+                    <div className="event-date" style={{ color: track.color }}>{formatDate(event.month, event.day)}</div>
+                    <div className="event-name">{event.name}</div>
+                    {event.desc && <div className="event-desc">{event.desc}</div>}
+                    {event.url && <a className="event-link" href={event.url} target="_blank" rel="noopener noreferrer">Learn more &rarr;</a>}
+                </div>
+            );
+        }
+
+        // ── Detail Panel ──
+        function DetailPanel({ selectedMonth, setSelectedMonth, activeTracks, viewMode }) {
+            const events = useMemo(() => getEventsForMonth(selectedMonth, activeTracks), [selectedMonth, activeTracks]);
+
+            const grouped = useMemo(() => {
+                const groups = {};
+                events.forEach(e => {
+                    if (!groups[e.track]) groups[e.track] = [];
+                    groups[e.track].push(e);
+                });
+                return groups;
+            }, [events]);
+
+            const order = viewMode === 'fiscal' ? FY_ORDER : CY_ORDER;
+            const idx = order.indexOf(selectedMonth);
+            const prevMonth = order[(idx - 1 + 12) % 12];
+            const nextMonth = order[(idx + 1) % 12];
+
+            return (
+                <div className="detail-panel">
+                    <div className="detail-header">
+                        <div className="detail-month-nav">
+                            <button className="nav-arrow" onClick={() => setSelectedMonth(prevMonth)} aria-label="Previous month">&larr;</button>
+                            <div className="section-title" style={{ marginBottom: 0 }}>&#128197; {MONTHS[selectedMonth - 1]}</div>
+                            <button className="nav-arrow" onClick={() => setSelectedMonth(nextMonth)} aria-label="Next month">&rarr;</button>
+                        </div>
+                    </div>
+
+                    {events.length === 0 ? (
+                        <div className="no-events">No events for selected tracks in {MONTHS[selectedMonth - 1]}.</div>
+                    ) : (
+                        TRACKS.filter(t => grouped[t.id] && activeTracks.has(t.id)).map(track => (
+                            <div key={track.id} className="track-group">
+                                <div className="track-group-header">
+                                    <span className="track-group-dot" style={{ background: track.color }} />
+                                    <span className="track-group-name" style={{ color: track.color }}>{track.name}</span>
+                                </div>
+                                {grouped[track.id].map((event, i) => (
+                                    <EventCard key={i} event={event} />
+                                ))}
+                            </div>
+                        ))
+                    )}
+                </div>
+            );
+        }
+
+        // ── Ballot History ──
+        function BallotHistory({ show, setShow }) {
+            return (
+                <div className="ballot-section">
+                    <div className="ballot-header" onClick={() => setShow(!show)} role="button" aria-expanded={show} tabIndex={0}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShow(!show); } }}>
+                        <div className="section-title" style={{ marginBottom: 0 }}>&#128220; ECE Ballot Measure History</div>
+                        <span className="ballot-toggle">{show ? 'collapse \u25B2' : 'expand \u25BC'}</span>
+                    </div>
+                    {show && (
+                        <div className="ballot-body">
+                            {BALLOT_HISTORY.map((item, i) => (
+                                <div key={i} className="ballot-card">
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                                        <div>
+                                            <div className="ballot-card-title">{item.name}</div>
+                                            <div className="ballot-card-year">Election year: {item.year}</div>
+                                        </div>
+                                        <span className={`ballot-result ${item.passed ? 'passed' : 'failed'}`}>
+                                            {item.passed ? 'Passed' : 'Failed'} &mdash; {item.vote}
+                                        </span>
+                                    </div>
+                                    <div className="ballot-card-desc">{item.desc}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // ── App ──
+        function App() {
+            const [selectedMonth, setSelectedMonth] = useState(CURRENT_MONTH);
+            const [activeTracks, setActiveTracks] = useState(() => new Set(['ece-advocacy']));
+            const [showBallotHistory, setShowBallotHistory] = useState(false);
+            const [viewMode, setViewMode] = useState('fiscal'); // 'fiscal' or 'calendar'
+
+            const toggleTrack = useCallback((trackId) => {
+                setActiveTracks(prev => {
+                    const next = new Set(prev);
+                    if (next.has(trackId)) {
+                        next.delete(trackId);
+                    } else {
+                        next.add(trackId);
+                    }
+                    return next;
+                });
+            }, []);
+
+            const goToToday = useCallback(() => {
+                setSelectedMonth(CURRENT_MONTH);
+            }, []);
+
+            return (
+                <React.Fragment>
+                    <Header activeTracks={activeTracks} toggleTrack={toggleTrack} goToToday={goToToday} viewMode={viewMode} setViewMode={setViewMode} />
+                    <div className="container">
+                        <MonthStrip selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} activeTracks={activeTracks} viewMode={viewMode} />
+                        <UpcomingSection activeTracks={activeTracks} />
+                        <DetailPanel selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} activeTracks={activeTracks} viewMode={viewMode} />
+                        <BallotHistory show={showBallotHistory} setShow={setShowBallotHistory} />
+                        <div className="footer">
+                            SF ECE Advocacy Coalition &middot; Annual Cycle Calendar &middot; Updated Mar 2026 &middot; Source: PBC CY&amp;F Budget Training
+                        </div>
+                    </div>
+                </React.Fragment>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
