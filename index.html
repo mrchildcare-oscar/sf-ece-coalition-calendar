@@ -460,7 +460,8 @@
             { id: 'sf-budget', name: 'SF City Budget', color: '#4285f4' },
             { id: 'ca-budget', name: 'State Budget Process', color: '#D4A843' },
             { id: 'elections', name: 'Elections', color: '#C74B50' },
-            { id: 'ca-legislative', name: 'State Legislative Calendar', color: '#7B5EA7' }
+            { id: 'ca-legislative', name: 'State Legislative Calendar', color: '#7B5EA7' },
+            { id: 'cpac-upk', name: 'CPAC / UPK Mixed Delivery', color: '#E07A3A' }
         ];
 
         const MONTHS = [
@@ -534,7 +535,17 @@
             { track: 'ca-legislative', month: 7, day: 4, name: 'Summer recess begins', desc: 'Legislature adjourns for summer recess' },
             { track: 'ca-legislative', month: 8, day: 4, name: 'Legislature reconvenes from summer recess', desc: 'Session resumes for final push on bills' },
             { track: 'ca-legislative', month: 9, day: 12, name: 'Session ends (interim recess)', desc: 'Last day for Legislature to pass bills; adjourns for interim recess' },
-            { track: 'ca-legislative', month: 10, day: 12, name: 'Governor\u2019s bill signing deadline', desc: 'Last day for Governor to sign or veto bills passed by Legislature' }
+            { track: 'ca-legislative', month: 10, day: 12, name: 'Governor\u2019s bill signing deadline', desc: 'Last day for Governor to sign or veto bills passed by Legislature' },
+
+            // CPAC / UPK Mixed Delivery (2026 — Needs Assessment & Gap Analysis year)
+            { track: 'cpac-upk', month: 1, day: 13, name: 'Steering Committee meeting', desc: 'UPK Mixed Delivery Steering Committee (Tuesdays, midday, ~2 weeks before Workgroup)' },
+            { track: 'cpac-upk', month: 1, day: 29, name: 'Workgroup Meeting #4', desc: 'ECE/UPK Policy Forum; Task Forces identified/formed based on Theory of Change (e.g. Children with Disabilities, Workforce Pathways); Semi-Annual Report submitted to CDE' },
+            { track: 'cpac-upk', month: 3, day: 10, name: 'Steering Committee meeting', desc: 'UPK Mixed Delivery Steering Committee' },
+            { track: 'cpac-upk', month: 3, day: 26, name: 'Workgroup Meeting #5', desc: 'Needs Assessment/Gap Analysis process launched' },
+            { track: 'cpac-upk', month: 5, day: 12, name: 'Steering Committee meeting', desc: 'UPK Mixed Delivery Steering Committee' },
+            { track: 'cpac-upk', month: 5, day: 28, name: 'Workgroup Meeting #6', desc: 'Task Forces report; Needs Assessment progress report; RFP for Needs Assessment released; UPK Online Portal launched' },
+            { track: 'cpac-upk', month: 7, day: 1, name: 'Workgroup Meeting #7 (quarterly)', desc: 'Semi-Annual Report approved by CDE; Task Forces report; Needs Assessment process launched with consultant' },
+            { track: 'cpac-upk', month: 10, day: 1, name: 'Workgroup Meeting #8 (quarterly)', desc: '2026 UPK Enrollment Fair(s) held (SFUSD, DEC, Children\u2019s Council)' }
         ];
 
         // ── Ballot measure history ──
@@ -815,7 +826,7 @@
         // ── App ──
         function App() {
             const [selectedMonth, setSelectedMonth] = useState(CURRENT_MONTH);
-            const [activeTracks, setActiveTracks] = useState(() => new Set(['ece-advocacy', 'sf-budget']));
+            const [activeTracks, setActiveTracks] = useState(() => new Set(['ece-advocacy', 'sf-budget', 'cpac-upk']));
             const [showBallotHistory, setShowBallotHistory] = useState(false);
             const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'fiscal'
 
