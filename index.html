@@ -422,6 +422,99 @@
         .ballot-result.passed { background: #d4edda; color: #155724; }
         .ballot-result.failed { background: #f8d7da; color: #721c24; }
 
+        /* Meeting Brief */
+        .meeting-brief-toggle {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #E07C3E;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        .meeting-brief-toggle:hover { text-decoration: underline; }
+        .meeting-brief {
+            margin-top: 8px;
+            padding: 12px;
+            background: #FDF8F3;
+            border-radius: 8px;
+            border: 1px solid #F0E0D0;
+        }
+        .brief-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #E07C3E;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+        }
+        .brief-item {
+            padding: 6px 0;
+            border-bottom: 1px solid #F0E0D0;
+        }
+        .brief-item:last-child { border-bottom: none; }
+        .brief-item-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2C2825;
+        }
+        .brief-item-type {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 3px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .brief-item-type.action { background: #FCE4EC; color: #C62828; }
+        .brief-item-type.discussion { background: #E3F2FD; color: #1565C0; }
+        .brief-theme {
+            display: inline-block;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: #F0EBE3;
+            color: #6B6560;
+            margin-top: 2px;
+        }
+        .brief-history {
+            margin-top: 4px;
+            padding-left: 10px;
+            border-left: 2px solid #F0E0D0;
+        }
+        .brief-history-ref {
+            font-size: 11px;
+            color: #6B6560;
+            margin-bottom: 2px;
+        }
+        .brief-history-ref a {
+            color: #E07C3E;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .brief-history-ref a:hover { text-decoration: underline; }
+        .brief-docs {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .brief-doc-link {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #FFFFFF;
+            border: 1px solid #F0E0D0;
+            color: #E07C3E;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .brief-doc-link:hover {
+            background: #FDF8F3;
+            border-color: #E07C3E;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -462,7 +555,7 @@
             { id: 'elections', name: 'Elections', color: '#C74B50' },
             { id: 'civic-ed', name: 'Civic Engagement & Education', color: '#E8683F' },
             { id: 'ca-legislative', name: 'State Legislative Calendar', color: '#7B5EA7' },
-            { id: 'cpac-upk', name: 'CPAC / UPK Mixed Delivery', color: '#E07A3A' }
+            { id: 'dec-meetings', name: 'DEC Meetings', color: '#E07C3E' }
         ];
 
         const MONTHS = [
@@ -557,17 +650,7 @@
             { track: 'ca-legislative', month: 7, day: 4, name: 'Summer recess begins', desc: 'Legislature adjourns for summer recess' },
             { track: 'ca-legislative', month: 8, day: 4, name: 'Legislature reconvenes from summer recess', desc: 'Session resumes for final push on bills' },
             { track: 'ca-legislative', month: 9, day: 12, name: 'Session ends (interim recess)', desc: 'Last day for Legislature to pass bills; adjourns for interim recess' },
-            { track: 'ca-legislative', month: 10, day: 12, name: 'Governor\u2019s bill signing deadline', desc: 'Last day for Governor to sign or veto bills passed by Legislature' },
-
-            // CPAC / UPK Mixed Delivery (2026 — Needs Assessment & Gap Analysis year)
-            { track: 'cpac-upk', month: 1, day: 13, name: 'Steering Committee meeting', desc: 'UPK Mixed Delivery Steering Committee (Tuesdays, midday, ~2 weeks before Workgroup)' },
-            { track: 'cpac-upk', month: 1, day: 29, name: 'Workgroup Meeting #4', desc: 'ECE/UPK Policy Forum; Task Forces identified/formed based on Theory of Change (e.g. Children with Disabilities, Workforce Pathways); Semi-Annual Report submitted to CDE' },
-            { track: 'cpac-upk', month: 3, day: 10, name: 'Steering Committee meeting', desc: 'UPK Mixed Delivery Steering Committee' },
-            { track: 'cpac-upk', month: 3, day: 26, name: 'Workgroup Meeting #5', desc: 'Needs Assessment/Gap Analysis process launched' },
-            { track: 'cpac-upk', month: 5, day: 12, name: 'Steering Committee meeting', desc: 'UPK Mixed Delivery Steering Committee' },
-            { track: 'cpac-upk', month: 5, day: 28, name: 'Workgroup Meeting #6', desc: 'Task Forces report; Needs Assessment progress report; RFP for Needs Assessment released; UPK Online Portal launched' },
-            { track: 'cpac-upk', month: 7, day: 1, name: 'Workgroup Meeting #7 (quarterly)', desc: 'Semi-Annual Report approved by CDE; Task Forces report; Needs Assessment process launched with consultant' },
-            { track: 'cpac-upk', month: 10, day: 1, name: 'Workgroup Meeting #8 (quarterly)', desc: '2026 UPK Enrollment Fair(s) held (SFUSD, DEC, Children\u2019s Council)' }
+            { track: 'ca-legislative', month: 10, day: 12, name: 'Governor\u2019s bill signing deadline', desc: 'Last day for Governor to sign or veto bills passed by Legislature' }
         ];
 
         // ── Ballot measure history ──
@@ -578,6 +661,24 @@
             { name: 'Proposition D (2000)', year: 2000, passed: true, vote: '74%', desc: 'Children\u2019s Fund \u2014 established the SF Children\u2019s Fund to support child care, health, education, and youth development.' },
             { name: 'Proposition J (1996)', year: 1996, passed: false, vote: '47%', desc: 'Child Care Set-Aside \u2014 proposed setting aside General Fund revenue for child care; did not pass.' }
         ];
+    </script>
+
+    <script id="dec-meeting-data">
+    // ── DEC Meeting Briefs (generated by generate_meeting_briefs.py) ──
+    // To populate: python generate_meeting_briefs.py --output meeting_briefs_data.js
+    // Then paste the output here, or run: python generate_meeting_briefs.py (injects directly)
+
+        const MEETING_BRIEFS = {};
+
+        const DEC_EVENTS = [
+            // Add upcoming DEC meetings here, e.g.:
+            // { track: 'dec-meetings', month: 1, day: 22, name: 'CFC / EC-COAC Joint Session', desc: 'Joint budget meeting', meetingDate: '2025-01-22' },
+            { track: 'sf-budget', month: 6, day: 11, name: 'DEC first round budget hearings', desc: 'Department of Early Childhood first round budget hearings', meetingDate: '2026-06-11' },
+            { track: 'sf-budget', month: 6, day: 18, name: 'DEC second round budget hearings', desc: 'Department of Early Childhood second round budget hearings', meetingDate: '2026-06-18' },
+        ];
+
+        // Merge DEC events into the main EVENTS array
+        EVENTS.push(...DEC_EVENTS);
     </script>
 
     <script type="text/babel">
@@ -628,8 +729,8 @@
                             </div>
                             <div className="header-actions">
                                 <div className="view-toggle" role="radiogroup" aria-label="Calendar view">
-                                    <button className={`view-toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`} onClick={() => setViewMode('calendar')} role="radio" aria-checked={viewMode === 'calendar'}>Calendar Year</button>
                                     <button className={`view-toggle-btn ${viewMode === 'fiscal' ? 'active' : ''}`} onClick={() => setViewMode('fiscal')} role="radio" aria-checked={viewMode === 'fiscal'}>Fiscal Year</button>
+                                    <button className={`view-toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`} onClick={() => setViewMode('calendar')} role="radio" aria-checked={viewMode === 'calendar'}>Calendar Year</button>
                                 </div>
                                 <button className="today-btn" onClick={goToToday}>Today &#8635;</button>
                             </div>
@@ -754,15 +855,83 @@
             );
         }
 
+        // ── Meeting Brief Component ──
+        function MeetingBrief({ brief }) {
+            if (!brief || (!brief.agendaItems.length && !brief.documents.length)) return null;
+
+            return (
+                <div className="meeting-brief">
+                    {brief.agendaItems.length > 0 && (
+                        <div>
+                            <div className="brief-section-title">Agenda Items ({brief.agendaItems.length})</div>
+                            {brief.agendaItems.map((item, i) => (
+                                <div key={i} className="brief-item">
+                                    <div>
+                                        <span className="brief-item-title">{item.title}</span>
+                                        <span className={`brief-item-type ${item.type.toLowerCase()}`}>{item.type}</span>
+                                    </div>
+                                    {item.themes && item.themes.map((theme, j) => (
+                                        <span key={j} className="brief-theme">{theme}</span>
+                                    ))}
+                                    {item.history && item.history.length > 0 && (
+                                        <div className="brief-history">
+                                            {item.history.map((ref, k) => (
+                                                <div key={k} className="brief-history-ref">
+                                                    {ref.url ? (
+                                                        <a href={ref.url} target="_blank" rel="noopener noreferrer">
+                                                            {ref.type} {ref.docType} ({ref.date})
+                                                        </a>
+                                                    ) : (
+                                                        <span>{ref.type} {ref.docType} ({ref.date})</span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {brief.documents.length > 0 && (
+                        <div>
+                            <div className="brief-section-title" style={{ marginTop: brief.agendaItems.length ? '10px' : 0 }}>Documents</div>
+                            <div className="brief-docs">
+                                {brief.documents.map((doc, i) => (
+                                    doc.url ? (
+                                        <a key={i} className="brief-doc-link" href={doc.url} target="_blank" rel="noopener noreferrer">
+                                            {doc.type}
+                                        </a>
+                                    ) : (
+                                        <span key={i} className="brief-doc-link">{doc.type}</span>
+                                    )
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
         // ── Event Card ──
         function EventCard({ event }) {
+            const [showBrief, setShowBrief] = useState(false);
             const track = getTrack(event.track);
+            const brief = event.meetingDate ? MEETING_BRIEFS[event.meetingDate] : null;
+
             return (
                 <div className="event-card">
                     <div className="event-date" style={{ color: track.color }}>{formatDate(event.month, event.day)}</div>
                     <div className="event-name">{event.name}</div>
                     {event.desc && <div className="event-desc">{event.desc}</div>}
                     {event.url && <a className="event-link" href={event.url} target="_blank" rel="noopener noreferrer">Learn more &rarr;</a>}
+                    {brief && (
+                        <div>
+                            <span className="meeting-brief-toggle" onClick={() => setShowBrief(!showBrief)}>
+                                {showBrief ? 'Hide Meeting Brief \u25B2' : 'Meeting Brief \u25BC'}
+                            </span>
+                            {showBrief && <MeetingBrief brief={brief} />}
+                        </div>
+                    )}
                 </div>
             );
         }
@@ -848,9 +1017,9 @@
         // ── App ──
         function App() {
             const [selectedMonth, setSelectedMonth] = useState(CURRENT_MONTH);
-            const [activeTracks, setActiveTracks] = useState(() => new Set(['ece-advocacy', 'sf-budget', 'cpac-upk', 'civic-ed']));
+            const [activeTracks, setActiveTracks] = useState(() => new Set(['ece-advocacy', 'dec-meetings', 'civic-ed']));
             const [showBallotHistory, setShowBallotHistory] = useState(false);
-            const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'fiscal'
+            const [viewMode, setViewMode] = useState('fiscal'); // 'fiscal' or 'calendar'
 
             const toggleTrack = useCallback((trackId) => {
                 setActiveTracks(prev => {
@@ -877,7 +1046,7 @@
                         <DetailPanel selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} activeTracks={activeTracks} viewMode={viewMode} />
                         <BallotHistory show={showBallotHistory} setShow={setShowBallotHistory} />
                         <div className="footer">
-                            SF ECE Advocacy Coalition &middot; Annual Cycle Calendar &middot; Updated Mar 2026 &middot; Source: PBC CY&amp;F Budget Training
+                            SF ECE Advocacy Coalition &middot; Annual Cycle Calendar &middot; Updated Mar 2026 &middot; Source: PBC CY&amp;F Budget Training &middot; DEC meeting archive: sfdec.org
                         </div>
                     </div>
                 </React.Fragment>
